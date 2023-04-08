@@ -3,9 +3,16 @@ import { Entities, Entity } from "./entity"
 
 
 function randRoom() {
-  return new Array(5).fill(null).map((_, i, arr) => {
+  const room = new Array(5).fill(null).map((_, i, arr) => {
     return new Array(5).fill(0).map(() => Math.floor(Math.random() * 8))
   })
+
+  room[0][0] = 51 + Math.floor(Math.random() * 4)
+  room[4][0] = 51 + Math.floor(Math.random() * 4)
+  room[0][4] = 51 + Math.floor(Math.random() * 4)
+  room[4][4] = 51 + Math.floor(Math.random() * 4)
+
+  return room
 }
 
 const NULLF = function () { }
@@ -38,7 +45,7 @@ export default class MainScene extends Scene {
 
   create() {
     this.cameras.main.setZoom(2, 2)
-    this.cameras.main.centerOn(213, 133)
+    this.cameras.main.centerOn(40, 40)
     this.cameras.main.setRoundPixels(true)
 
     const anim = this.anims.create({
@@ -62,7 +69,7 @@ export default class MainScene extends Scene {
     this.map = this.make.tilemap({ data: tiles, tileWidth: 16, tileHeight: 16 })
     this.map.addTilesetImage("tiles")
     this.layer = this.map.createLayer(0, "tiles", 0, 0)
-    // map.setCollision(1)
+    this.map.setCollision([51, 52, 53, 54])
     // for (let i = 0; i < data.length; i++) {
     //   const row = data[i]
     //   for (let j = 0; j < row.length; j++) {
@@ -106,14 +113,18 @@ export default class MainScene extends Scene {
 
     if (this.p.x < 0) {
       this.p.x += 80
+      this.map.putTilesAt(randRoom(), 0, 0)
     } else if (this.p.x > 80) {
       this.p.x -= 80
+      this.map.putTilesAt(randRoom(), 0, 0)
     }
 
     if (this.p.y < 0) {
       this.p.y += 80
+      this.map.putTilesAt(randRoom(), 0, 0)
     } else if (this.p.y > 80) {
       this.p.y -= 80
+      this.map.putTilesAt(randRoom(), 0, 0)
     }
   }
 }
