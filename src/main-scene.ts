@@ -1,5 +1,6 @@
 import { GameObjects, Input, Scene, Tilemaps } from "phaser"
 import { Entities, Entity } from "./entity"
+import { genmaze } from "./gen"
 
 
 function randRoom() {

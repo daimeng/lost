@@ -17,3 +17,99 @@ h1 {
   font-size: 30px;
   font-weight: normal;
 }
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid red;
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  width: 20px;
+  height: 20px;
+  border: 1px solid red;
+  box-sizing: border-box;
+}
+
+.borders-0 {}
+
+.borders-1 {
+  border-top: none;
+}
+
+.borders-2 {
+  border-right: none;
+}
+
+.borders-3 {
+  border-top: none;
+  border-right: none;
+}
+
+.borders-4 {
+  border-bottom: none;
+}
+
+.borders-5 {
+  border-top: none;
+  border-bottom: none;
+}
+
+.borders-6 {
+  border-right: none;
+  border-bottom: none;
+}
+
+.borders-7 {
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+}
+
+.borders-8 {
+  border-left: none;
+}
+
+.borders-9 {
+  border-top: none;
+  border-left: none;
+}
+
+.borders-10 {
+  border-right: none;
+  border-left: none;
+}
+
+.borders-11 {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+}
+
+.borders-12 {
+  border-bottom: none;
+  border-left: none;
+}
+
+.borders-13 {
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+}
+
+.borders-14 {
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+}
+
+.borders-15 {
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: none;
+}
