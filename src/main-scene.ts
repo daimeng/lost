@@ -4,7 +4,7 @@ import { MAZEH, MAZEW } from "./game"
 import { coords21, genmaze, Point } from "./gen"
 import seedrandom from 'seedrandom'
 
-const RPRE = Math.random()
+const RPRE = window.location.search || (new Date()).toISOString().slice(0, 10)
 const RSIZE = 5
 
 const EMPTYROOM = new Array(RSIZE).fill(null).map((_, i, arr) => {
@@ -65,6 +65,8 @@ export default class MainScene extends Scene {
   maze: Array<[number, number]>
   grid: Array<Array<number>>
   curr: Point
+  goal: Point
+  home: Phaser.Types.Physics.Arcade.SpriteWithStaticBody
 
   constructor() {
     super('demo')
@@ -78,6 +80,10 @@ export default class MainScene extends Scene {
       Z: this.input.keyboard.addKey('Z'),
     }
     this.entities = new Entities(this)
+    this.home = this.physics.add.staticSprite(40, 40, 'tiles', 986)
+    this.home.setActive(false)
+    this.home.setVisible(false)
+    this.home.body.enable = false
   }
 
   genmaze() {
@@ -108,9 +114,24 @@ export default class MainScene extends Scene {
 
   switchRoom(x: number, y: number) {
     const borders = this.grid[y][x]
-    this.map.putTilesAt(randRoom(borders, x, y), 0, 0)
+    const room = randRoom(borders, x, y)
     this.curr[0] = x
     this.curr[1] = y
+    // set home if in current room
+    // if (this.curr[0] === this.goal[0] && this.curr[1] === this.goal[1]) {
+    //   room[2][2] = 986
+    // }
+    if (this.curr[0] === this.goal[0] && this.curr[1] === this.goal[1]) {
+      this.home.setActive(true)
+      this.home.setVisible(true)
+      this.home.body.enable = true
+      room[2][2] = 0
+    } else {
+      this.home.setActive(false)
+      this.home.setVisible(false)
+      this.home.body.enable = false
+    }
+    this.map.putTilesAt(room, 0, 0)
   }
 
   create() {
@@ -126,17 +147,12 @@ export default class MainScene extends Scene {
       frameRate: 4
     })
 
-    // const data = new Array(40).fill(null).map((_, i, arr) => {
-    //   if (i === 0 || i === arr.length - 1) {
-    //     return new Array(60).fill(1)
-    //   }
-    //   const row = new Array(60).fill(0)
-    //   row[0] = 1
-    //   row[row.length - 1] = 1
-    //   return row
-    // })
-
     this.curr = [
+      Math.floor(Math.random() * MAZEW),
+      Math.floor(Math.random() * MAZEH),
+    ]
+
+    this.goal = [
       Math.floor(Math.random() * MAZEW),
       Math.floor(Math.random() * MAZEH),
     ]
@@ -146,18 +162,14 @@ export default class MainScene extends Scene {
     this.layer = this.map.createLayer(0, "tiles", 0, 0)
     this.map.setCollision([51, 52, 53, 54])
 
+    this.physics.add.overlap(this.home, this.entities, () => {
+      this.scene.launch('win')
+      this.scene.stop()
+    })
+
     this.switchRoom(this.curr[0], this.curr[1])
-    // for (let i = 0; i < data.length; i++) {
-    //   const row = data[i]
-    //   for (let j = 0; j < row.length; j++) {
-    //     const idx = i * row.length + j
-    //     map.setCollision(idx, row[j] === 1)
-    //   }
-    // }
-    // const debugGraphics = this.add.graphics()
-    // layer.renderDebug(debugGraphics)else
     this.entities.setDepth(1)
-    this.p = this.entities.spawn(30, 50)
+    this.p = this.entities.spawn(24, 24)
     this.physics.add.collider(this.entities, this.layer)
 
     this.p.spr.play({ key: 'idle', repeat: -1 })
