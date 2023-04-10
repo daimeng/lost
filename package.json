@@ -18,9 +18,11 @@
   "license": "MIT",
   "dependencies": {
     "inferno": "^8.0.5",
-    "phaser": "^3.55.2"
+    "phaser": "^3.55.2",
+    "seedrandom": "^3.0.5"
   },
   "devDependencies": {
+    "@types/seedrandom": "^3.0.5",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.7.2",
     "html-webpack-plugin": "^5.5.0",

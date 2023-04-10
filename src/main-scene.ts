@@ -1,18 +1,50 @@
 import { GameObjects, Input, Scene, Tilemaps } from "phaser"
 import { Entities, Entity } from "./entity"
 import { MAZEH, MAZEW } from "./game"
-import { coords21, genmaze } from "./gen"
+import { coords21, genmaze, Point } from "./gen"
+import seedrandom from 'seedrandom'
 
+const RPRE = Math.random()
+const RSIZE = 5
 
-function randRoom() {
-  const room = new Array(5).fill(null).map((_, i, arr) => {
-    return new Array(5).fill(0).map(() => Math.floor(Math.random() * 8))
+const EMPTYROOM = new Array(RSIZE).fill(null).map((_, i, arr) => {
+  return new Array(RSIZE).fill(0)
+})
+
+function randRoom(borders: number, x: number, y: number) {
+  const rng = seedrandom(`${RPRE}-${x}-${y}`)
+  const room = new Array(RSIZE).fill(null).map((_, i, arr) => {
+    return new Array(RSIZE).fill(0).map(() => Math.floor(rng() * 8))
   })
 
-  room[0][0] = 51 + Math.floor(Math.random() * 4)
-  room[4][0] = 51 + Math.floor(Math.random() * 4)
-  room[0][4] = 51 + Math.floor(Math.random() * 4)
-  room[4][4] = 51 + Math.floor(Math.random() * 4)
+  if (!(borders & 0b0001)) {
+    for (let i = 0; i < RSIZE; i++) {
+      room[0][i] = 51 + Math.floor(rng() * 4)
+    }
+  }
+
+  if (!(borders & 0b0100)) {
+    for (let i = 0; i < RSIZE; i++) {
+      room[RSIZE - 1][i] = 51 + Math.floor(rng() * 4)
+    }
+  }
+
+  if (!(borders & 0b0010)) {
+    for (let i = 0; i < RSIZE; i++) {
+      room[i][RSIZE - 1] = 51 + Math.floor(rng() * 4)
+    }
+  }
+
+  if (!(borders & 0b1000)) {
+    for (let i = 0; i < RSIZE; i++) {
+      room[i][0] = 51 + Math.floor(rng() * 4)
+    }
+  }
+
+  room[0][0] = 51 + Math.floor(rng() * 4)
+  room[4][0] = 51 + Math.floor(rng() * 4)
+  room[0][4] = 51 + Math.floor(rng() * 4)
+  room[4][4] = 51 + Math.floor(rng() * 4)
 
   return room
 }
@@ -32,6 +64,7 @@ export default class MainScene extends Scene {
   layer: Tilemaps.TilemapLayer
   maze: Array<[number, number]>
   grid: Array<Array<number>>
+  curr: Point
 
   constructor() {
     super('demo')
@@ -73,6 +106,13 @@ export default class MainScene extends Scene {
     this.game.events.emit('genmaze', this.grid)
   }
 
+  switchRoom(x: number, y: number) {
+    const borders = this.grid[y][x]
+    this.map.putTilesAt(randRoom(borders, x, y), 0, 0)
+    this.curr[0] = x
+    this.curr[1] = y
+  }
+
   create() {
     this.cameras.main.setZoom(2, 2)
     this.cameras.main.centerOn(40, 40)
@@ -80,7 +120,7 @@ export default class MainScene extends Scene {
 
     this.genmaze()
 
-    const anim = this.anims.create({
+    this.anims.create({
       key: 'idle',
       frames: this.anims.generateFrameNumbers('sprites', { start: 0, end: 2 }),
       frameRate: 4
@@ -96,12 +136,17 @@ export default class MainScene extends Scene {
     //   return row
     // })
 
-    const tiles = randRoom()
+    this.curr = [
+      Math.floor(Math.random() * MAZEW),
+      Math.floor(Math.random() * MAZEH),
+    ]
 
-    this.map = this.make.tilemap({ data: tiles, tileWidth: 16, tileHeight: 16 })
+    this.map = this.make.tilemap({ data: EMPTYROOM, tileWidth: 16, tileHeight: 16 })
     this.map.addTilesetImage("tiles")
     this.layer = this.map.createLayer(0, "tiles", 0, 0)
     this.map.setCollision([51, 52, 53, 54])
+
+    this.switchRoom(this.curr[0], this.curr[1])
     // for (let i = 0; i < data.length; i++) {
     //   const row = data[i]
     //   for (let j = 0; j < row.length; j++) {
@@ -145,18 +190,18 @@ export default class MainScene extends Scene {
 
     if (this.p.x < 0) {
       this.p.x += 80
-      this.map.putTilesAt(randRoom(), 0, 0)
+      this.switchRoom(this.curr[0] - 1, this.curr[1])
     } else if (this.p.x > 80) {
       this.p.x -= 80
-      this.map.putTilesAt(randRoom(), 0, 0)
+      this.switchRoom(this.curr[0] + 1, this.curr[1])
     }
 
     if (this.p.y < 0) {
       this.p.y += 80
-      this.map.putTilesAt(randRoom(), 0, 0)
+      this.switchRoom(this.curr[0], this.curr[1] - 1)
     } else if (this.p.y > 80) {
       this.p.y -= 80
-      this.map.putTilesAt(randRoom(), 0, 0)
+      this.switchRoom(this.curr[0], this.curr[1] + 1)
     }
   }
 }

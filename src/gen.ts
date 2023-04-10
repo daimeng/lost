@@ -5,7 +5,7 @@ const DIRS = [
   [-1, 0],
 ]
 
-type Point = [number, number]
+export type Point = [number, number]
 
 const path = new Map()
 
