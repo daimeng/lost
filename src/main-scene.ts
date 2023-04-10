@@ -14,7 +14,7 @@ const EMPTYROOM = new Array(RSIZE).fill(null).map((_, i, arr) => {
 function randRoom(borders: number, x: number, y: number) {
   const rng = seedrandom(`${RPRE}-${x}-${y}`)
   const room = new Array(RSIZE).fill(null).map((_, i, arr) => {
-    return new Array(RSIZE).fill(0).map(() => Math.max(Math.floor(rng() * 16), 0) - 8)
+    return new Array(RSIZE).fill(0).map(() => Math.max(Math.floor(rng() * 7), 0) + 1)
   })
 
   if (!(borders & 0b0001)) {
