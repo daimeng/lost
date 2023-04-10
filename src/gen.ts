@@ -1,3 +1,6 @@
+import seedrandom from "seedrandom"
+import { RPRE } from "./game"
+
 const DIRS = [
   [0, 1],
   [1, 0],
@@ -16,6 +19,7 @@ function swap<T>(arr: Array<T>, a: number, b: number) {
 }
 
 export function genmaze(h: number, w: number): Array<[number, number]> {
+  const rng = seedrandom(RPRE + '-genmaze')
   // const grid = new Array(h).fill(null).map(() => {
   //   return new Array(w).fill(0)
   // })
@@ -25,7 +29,7 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
 
   while (open.length) {
     // pop random
-    const idx = Math.floor(Math.random() * open.length)
+    const idx = Math.floor(rng() * open.length)
     // swap and pop
     swap(open, idx, open.length - 1)
     let curr = open.pop()
@@ -40,7 +44,7 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
 
       const tried = [false, false, false, false]
       while (!tried.every(Boolean)) {
-        const dir = Math.floor(Math.random() * 4)
+        const dir = Math.floor(rng() * 4)
         if (tried[dir]) continue
         tried[dir] = true
 

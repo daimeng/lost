@@ -78,11 +78,13 @@ export default class MainScene extends Scene {
   }
 
   preload() {
+    const rng = seedrandom(RPRE + '-pos')
+
     this.pconf = {
-      x: Math.floor(Math.random() * MAZEW),
-      y: Math.floor(Math.random() * MAZEH),
-      gx: Math.floor(Math.random() * MAZEW),
-      gy: Math.floor(Math.random() * MAZEH),
+      x: Math.floor(rng() * MAZEW),
+      y: Math.floor(rng() * MAZEH),
+      gx: Math.floor(rng() * MAZEW),
+      gy: Math.floor(rng() * MAZEH),
     }
 
     if (P) {

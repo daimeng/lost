@@ -8,8 +8,8 @@ export const PARAMS = new URLSearchParams(window.location.search);
 export const RPRE = PARAMS.get('seed') || (new Date()).toISOString().slice(0, 10)
 export const P = PARAMS.get('p')
 
-export const MAZEW = +(PARAMS.get('w') || 3)
-export const MAZEH = +(PARAMS.get('h') || 3)
+export const MAZEW = +(PARAMS.get('w') || 8)
+export const MAZEH = +(PARAMS.get('h') || 8)
 export const GWIDTH = 1200
 export const GHEIGHT = 800
 
