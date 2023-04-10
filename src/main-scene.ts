@@ -157,7 +157,7 @@ export default class MainScene extends Scene {
   }
 
   create() {
-    this.cameras.main.setZoom(2, 2)
+    this.cameras.main.setZoom(3, 3)
     this.cameras.main.centerOn(40, 40)
     this.cameras.main.setRoundPixels(true)
 
