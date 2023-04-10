@@ -21,7 +21,7 @@ h1 {
 .grid {
   display: flex;
   flex-direction: column;
-  border: 1px solid red;
+  border: 1px solid white;
 }
 
 .grid-row {
@@ -31,7 +31,7 @@ h1 {
 .grid-cell {
   width: 20px;
   height: 20px;
-  border: 1px solid red;
+  border: 1px solid white;
   box-sizing: border-box;
   color: rgba(255, 255, 255, 0.1);
   display: flex;

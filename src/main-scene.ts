@@ -1,6 +1,7 @@
 import { GameObjects, Input, Scene, Tilemaps } from "phaser"
 import { Entities, Entity } from "./entity"
-import { genmaze } from "./gen"
+import { MAZEH, MAZEW } from "./game"
+import { coords21, genmaze } from "./gen"
 
 
 function randRoom() {
@@ -29,6 +30,8 @@ export default class MainScene extends Scene {
   entities: Entities
   map: Tilemaps.Tilemap
   layer: Tilemaps.TilemapLayer
+  maze: Array<[number, number]>
+  grid: Array<Array<number>>
 
   constructor() {
     super('demo')
@@ -44,10 +47,38 @@ export default class MainScene extends Scene {
     this.entities = new Entities(this)
   }
 
+  genmaze() {
+    this.maze = genmaze(MAZEH, MAZEW)
+    this.grid = new Array(MAZEH).fill(null).map((_, i) => {
+      return new Array(MAZEW).fill(0).map((_, j) => {
+        let border = 0
+        const coord = coords21(j, i, MAZEW)
+        if (this.maze.findIndex(([a, b]) => a === coord && b === coords21(j, i - 1, MAZEW)) !== -1) {
+          border |= 1
+        }
+        if (this.maze.findIndex(([a, b]) => a === coord && b === coords21(j + 1, i, MAZEW)) !== -1) {
+          border |= 2
+        }
+        if (this.maze.findIndex(([a, b]) => a === coord && b === coords21(j, i + 1, MAZEW)) !== -1) {
+          border |= 4
+        }
+        if (this.maze.findIndex(([a, b]) => a === coord && b === coords21(j - 1, i, MAZEW)) !== -1) {
+          border |= 8
+        }
+
+        return border
+      })
+    })
+
+    this.game.events.emit('genmaze', this.grid)
+  }
+
   create() {
     this.cameras.main.setZoom(2, 2)
     this.cameras.main.centerOn(40, 40)
     this.cameras.main.setRoundPixels(true)
+
+    this.genmaze()
 
     const anim = this.anims.create({
       key: 'idle',

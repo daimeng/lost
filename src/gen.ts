@@ -83,9 +83,6 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
         break
       }
     }
-    // path.set(8, 5)
-    // path.set(5, 4)
-    // path.set(4, 1)
 
     // record path to maze
     for (let [k, v] of path) {

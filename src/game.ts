@@ -3,6 +3,9 @@ import { LoaderScene } from "./loader-scene";
 import MainScene from "./main-scene";
 import { UiScene } from "./ui-scene";
 
+export const MAZEW = 8
+export const MAZEH = 8
+
 export const CONFIG: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: 1280,
