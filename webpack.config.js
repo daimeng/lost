@@ -1,6 +1,7 @@
 const path = require('node:path')
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { readFileSync } = require('node:fs');
 const infernoTsPlugin = require('ts-plugin-inferno').default
 
 module.exports = {
@@ -9,6 +10,7 @@ module.exports = {
   devtool: 'eval-source-map',
   output: {
     path: __dirname + "/dist",
+    publicPath: '/lost/',
     filename: "bundle.js"
   },
   resolve: {
