@@ -6,8 +6,8 @@ import './main.css';
 
 const container = document.getElementById('app');
 
-const w = 3
-const h = 3
+const w = 8
+const h = 8
 
 class MyComponent extends Component<any, any> {
 

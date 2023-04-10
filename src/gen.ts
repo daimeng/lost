@@ -29,58 +29,63 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
     // swap and pop
     swap(open, idx, open.length - 1)
     let curr = open.pop()
-    console.log(curr, open)
 
     // reset path tacker
     path.clear()
 
-    // while (curr != null) {
-    //   console.log(curr)
-    //   const [x, y] = coords12(curr, w)
-    //   let nextpoint: Point
+    outer: while (curr != null) {
+      const [x, y] = coords12(curr, w)
+      let nextpoint: Point
+      let success = false
 
-    //   let c = 5
-    //   do {
-    //     c--
-    //     const dir = Math.floor(Math.random() * 4)
-    //     console.log("trying dir: ", dir)
-    //     const [dx, dy] = DIRS[dir]
+      const tried = [false, false, false, false]
+      while (!tried.every(Boolean)) {
+        const dir = Math.floor(Math.random() * 4)
+        if (tried[dir]) continue
+        tried[dir] = true
 
-    //     nextpoint = [x + dx, y + dy]
-    //   } while (
-    //     c > 0
-    //     && (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h)
-    //   )
-    //   if (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h) {
-    //     break
-    //   }
+        const [dx, dy] = DIRS[dir]
+        nextpoint = [x + dx, y + dy]
 
-    //   const nextid = coords21(...nextpoint, w)
-    //   // add curr to next step to path
-    //   path.set(curr, nextid)
+        if (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h) {
+          continue
+        }
+        const nextid = coords21(...nextpoint, w)
+        // add curr to next step to path
+        path.set(curr, nextid)
 
-    //   const nextloc = open.findIndex(x => x === nextid)
+        const nextloc = open.findIndex(x => x === nextid)
+        // if next already part of maze
+        if (nextloc === -1) {
+          if (path.has(nextid)) {
+            // if part of current path, rewind
+            path.delete(curr)
+            continue
+          } else {
+            // if not part of current path, save
+            break outer
+          }
+        }
 
-    //   // if next already part of maze
-    //   if (nextloc === -1) {
-    //     if (path.has(nextid)) {
-    //       // if part of current path, rewind
-    //       path.delete(curr)
-    //     } else {
-    //       // if not part of current path, save
-    //       break
-    //     }
-    //   } else {
-    //     swap(open, nextloc, open.length - 1)
+        // else continue to next, add to maze
+        swap(open, nextloc, open.length - 1)
+        curr = open.pop()
+        success = true
+        break
+      }
 
-    //     // add next to maze
-    //     curr = open.pop()
-    //   }
-    // }
+      if (success) continue
 
-    path.set(8, 5)
-    path.set(5, 4)
-    path.set(4, 1)
+      if (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h) {
+        break
+      }
+      if (tried.every(Boolean)) {
+        break
+      }
+    }
+    // path.set(8, 5)
+    // path.set(5, 4)
+    // path.set(4, 1)
 
     // record path to maze
     for (let [k, v] of path) {

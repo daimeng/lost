@@ -33,6 +33,10 @@ h1 {
   height: 20px;
   border: 1px solid red;
   box-sizing: border-box;
+  color: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .borders-0 {}
