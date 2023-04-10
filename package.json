@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "A basic example of Inferno with TypeScript",
   "main": "index.js",
+  "homepage": "https://thechildrens.github.io/lost",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --mode=production",
     "check": "tsc",
     "lint": "tslint src/*.ts{,x} src/**/*.ts{,x}",
-    "start": "webpack-dev-server --mode=development"
+    "start": "webpack-dev-server --mode=development",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "keywords": [
     "inferno",
@@ -25,6 +28,7 @@
     "@types/seedrandom": "^3.0.5",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.7.2",
+    "gh-pages": "^5.0.0",
     "html-webpack-plugin": "^5.5.0",
     "sass": "^1.56.1",
     "sass-loader": "^13.2.0",
