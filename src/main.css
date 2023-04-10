@@ -39,6 +39,14 @@ h1 {
   justify-content: center;
 }
 
+.grid-curr {
+  background-color: lightblue;
+}
+
+.grid-goal {
+  background-color: burlywood;
+}
+
 .hidden {
   display: none;
 }

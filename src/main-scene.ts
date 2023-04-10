@@ -1,10 +1,9 @@
 import { GameObjects, Input, Scene, Tilemaps } from "phaser"
 import { Entities, Entity } from "./entity"
-import { MAZEH, MAZEW } from "./game"
+import { MAZEH, MAZEW, P, RPRE } from "./game"
 import { coords21, genmaze, Point } from "./gen"
 import seedrandom from 'seedrandom'
 
-const RPRE = window.location.search || (new Date()).toISOString().slice(0, 10)
 const RSIZE = 5
 
 const EMPTYROOM = new Array(RSIZE).fill(null).map((_, i, arr) => {
@@ -67,12 +66,29 @@ export default class MainScene extends Scene {
   curr: Point
   goal: Point
   home: Phaser.Types.Physics.Arcade.SpriteWithStaticBody
+  pconf: {
+    x: number,
+    y: number,
+    gx: number,
+    gy: number,
+  }
 
   constructor() {
     super('demo')
   }
 
   preload() {
+    this.pconf = {
+      x: Math.floor(Math.random() * MAZEW),
+      y: Math.floor(Math.random() * MAZEH),
+      gx: Math.floor(Math.random() * MAZEW),
+      gy: Math.floor(Math.random() * MAZEH),
+    }
+
+    if (P) {
+      this.pconf = JSON.parse(atob(P))
+    }
+
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keys = {
       SPACE: this.input.keyboard.addKey('SPACE'),
@@ -109,7 +125,7 @@ export default class MainScene extends Scene {
       })
     })
 
-    this.game.events.emit('genmaze', this.grid)
+    this.game.events.emit('genmaze', this.grid, this.pconf)
   }
 
   switchRoom(x: number, y: number) {
@@ -117,6 +133,8 @@ export default class MainScene extends Scene {
     const room = randRoom(borders, x, y)
     this.curr[0] = x
     this.curr[1] = y
+    this.pconf.x = x
+    this.pconf.y = y
     // set home if in current room
     // if (this.curr[0] === this.goal[0] && this.curr[1] === this.goal[1]) {
     //   room[2][2] = 986
@@ -132,6 +150,8 @@ export default class MainScene extends Scene {
       this.home.body.enable = false
     }
     this.map.putTilesAt(room, 0, 0)
+
+    this.game.events.emit('genmaze', this.grid, this.pconf)
   }
 
   create() {
@@ -148,13 +168,13 @@ export default class MainScene extends Scene {
     })
 
     this.curr = [
-      Math.floor(Math.random() * MAZEW),
-      Math.floor(Math.random() * MAZEH),
+      this.pconf.x,
+      this.pconf.y,
     ]
 
     this.goal = [
-      Math.floor(Math.random() * MAZEW),
-      Math.floor(Math.random() * MAZEH),
+      this.pconf.gx,
+      this.pconf.gy,
     ]
 
     this.map = this.make.tilemap({ data: EMPTYROOM, tileWidth: 16, tileHeight: 16 })

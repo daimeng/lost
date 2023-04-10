@@ -4,8 +4,12 @@ import MainScene from "./main-scene";
 import { UiScene } from "./ui-scene";
 import { WinScene } from "./win-scene";
 
-export const MAZEW = 3
-export const MAZEH = 3
+export const PARAMS = new URLSearchParams(window.location.search);
+export const RPRE = PARAMS.get('seed') || (new Date()).toISOString().slice(0, 10)
+export const P = PARAMS.get('p')
+
+export const MAZEW = +(PARAMS.get('w') || 3)
+export const MAZEH = +(PARAMS.get('h') || 3)
 export const GWIDTH = 1200
 export const GHEIGHT = 800
 
