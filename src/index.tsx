@@ -128,7 +128,7 @@ class MyComponent extends Component<Props, State> {
 
     if (grid == null) return null
     return (
-      <>
+      <div id="controls">
         <div className={`grid ${hidden ? 'hidden' : ''}`}>
           {grid.map((row, i) =>
             <div className="grid-row">
@@ -140,10 +140,8 @@ class MyComponent extends Component<Props, State> {
             </div>
           )}
         </div>
-        <div id="controls">
-          <button onClick={this.parse}>PARSE</button>
-        </div>
-      </>
+        <button onClick={this.parse}>PARSE</button>
+      </div>
     )
   }
 }

@@ -28,7 +28,8 @@ export const CONFIG: Phaser.Types.Core.GameConfig = {
       // debug: true
     }
   },
-  scene: [LoaderScene, MainScene, UiScene, WinScene]
+  scene: [LoaderScene, MainScene, UiScene, WinScene],
+  parent: document.getElementById('game')
 }
 
 export const game = new Phaser.Game(CONFIG);
