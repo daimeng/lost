@@ -1,7 +1,6 @@
 const path = require('node:path')
 const CleanWebpackPlugin = require('clean-webpack-plugin').CleanWebpackPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { readFileSync } = require('node:fs');
 const infernoTsPlugin = require('ts-plugin-inferno').default
 
 module.exports = {
@@ -10,14 +9,19 @@ module.exports = {
   devtool: 'eval-source-map',
   output: {
     path: __dirname + "/dist",
-    publicPath: '/lost/',
+    publicPath: process.env.PRODUCTION ? '/lost/' : 'auto',
     filename: "bundle.js"
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.js', '.jsx']
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    fallback: { "vm": require.resolve("vm-browserify") }
   },
   performance: {
     hints: false
+  },
+  externals: {
+    acorn: { commonjs: 'acorn' },
+    interpreter: { commonjs: 'Interpreter' }
   },
   module: {
     rules: [
