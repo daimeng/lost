@@ -30,26 +30,29 @@ const path = new Map<number, number>()
 export function genmaze(h: number, w: number): Array<[number, number]> {
   const rng = seedrandom(RPRE + '-genmaze')
   const maze = []
-
   const open = new Array(h * w).fill(0).map((_, i) => i)
+  let olen = open.length
+
   // swap and pop random
-  const idx = Math.floor(rng() * open.length)
-  swap(open, idx, open.length - 1)
-  const start = open.pop()
+  const idx = Math.floor(rng() * olen)
+  swap(open, idx, olen - 1)
+  const start = open[olen - 1]
+  olen -= 1
 
-  const visited = new Set()
-  visited.add(start)
+  const visited = new Array(h * w).fill(false)
+  visited[start] = true
 
-  while (open.length) {
+  while (olen > 0) {
     // swap and pop random
-    const idx = Math.floor(rng() * open.length)
-    swap(open, idx, open.length - 1)
-    let curr = open.pop()
+    const idx = Math.floor(rng() * olen)
+    swap(open, idx, olen - 1)
+    let curr = open[olen - 1]
+    olen -= 1
 
     // reset path tacker
     path.clear()
 
-    while (!visited.has(curr)) {
+    while (!visited[curr]) {
       const [x, y] = coords12(curr, w)
 
       // find first valid neighbor
@@ -82,11 +85,11 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
     // record path to maze
     for (let [k, v] of path) {
       const openid = open.findIndex(x => x === k)
-      if (openid !== -1) {
-        swap(open, openid, open.length - 1)
-        open.pop()
+      if (openid !== -1 && openid < olen) {
+        swap(open, openid, olen - 1)
+        olen -= 1
       }
-      visited.add(k)
+      visited[k] = true
 
       maze.push([k, v])
       maze.push([v, k])
