@@ -29,9 +29,6 @@ const path = new Map<number, number>()
 
 export function genmaze(h: number, w: number): Array<[number, number]> {
   const rng = seedrandom(RPRE + '-genmaze')
-  // const grid = new Array(h).fill(null).map(() => {
-  //   return new Array(w).fill(0)
-  // })
   const maze = []
 
   const open = new Array(h * w).fill(0).map((_, i) => i)
