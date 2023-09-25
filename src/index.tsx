@@ -5,7 +5,9 @@ import Blockly from 'blockly'
 import { javascriptGenerator } from 'blockly/javascript'
 import acorn from './acorn'
 import './interpreter'
+import './grid.css'
 import './main.css'
+
 window['acorn'] = acorn
 
 const container = document.getElementById('app');

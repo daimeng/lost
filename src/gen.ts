@@ -1,22 +1,31 @@
 import seedrandom from "seedrandom"
 import { RPRE } from "./game"
+import { swap } from "./utils/array"
 
-const DIRS = [
-  [0, 1],
-  [1, 0],
-  [0, -1],
-  [-1, 0],
+const DX = [
+  0,
+  1,
+  0,
+  -1,
+]
+
+const DY = [
+  1,
+  0,
+  -1,
+  0,
+]
+
+const OPPO = [
+  2,
+  3,
+  0,
+  1,
 ]
 
 export type Point = [number, number]
 
-const path = new Map()
-
-function swap<T>(arr: Array<T>, a: number, b: number) {
-  const tmp = arr[a]
-  arr[a] = arr[b]
-  arr[b] = tmp
-}
+const path = new Map<number, number>()
 
 export function genmaze(h: number, w: number): Array<[number, number]> {
   const rng = seedrandom(RPRE + '-genmaze')
@@ -26,70 +35,62 @@ export function genmaze(h: number, w: number): Array<[number, number]> {
   const maze = []
 
   const open = new Array(h * w).fill(0).map((_, i) => i)
+  // swap and pop random
+  const idx = Math.floor(rng() * open.length)
+  swap(open, idx, open.length - 1)
+  const start = open.pop()
+
+  const visited = new Set()
+  visited.add(start)
 
   while (open.length) {
-    // pop random
+    // swap and pop random
     const idx = Math.floor(rng() * open.length)
-    // swap and pop
     swap(open, idx, open.length - 1)
     let curr = open.pop()
 
     // reset path tacker
     path.clear()
 
-    outer: while (curr != null) {
+    while (!visited.has(curr)) {
       const [x, y] = coords12(curr, w)
-      let nextpoint: Point
-      let success = false
 
+      // find first valid neighbor
       const tried = [false, false, false, false]
       while (!tried.every(Boolean)) {
         const dir = Math.floor(rng() * 4)
+
+        // pick again if already tried
         if (tried[dir]) continue
         tried[dir] = true
 
-        const [dx, dy] = DIRS[dir]
-        nextpoint = [x + dx, y + dy]
+        const nx = x + DX[dir]
+        const ny = y + DY[dir]
 
-        if (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h) {
+        if (
+          nx < 0 || nx >= w
+          || ny < 0 || ny >= h
+        ) {
           continue
         }
-        const nextid = coords21(...nextpoint, w)
+        const nextid = coords21(nx, ny, w)
+
         // add curr to next step to path
         path.set(curr, nextid)
-
-        const nextloc = open.findIndex(x => x === nextid)
-        // if next already part of maze
-        if (nextloc === -1) {
-          if (path.has(nextid)) {
-            // if part of current path, rewind
-            path.delete(curr)
-            continue
-          } else {
-            // if not part of current path, save
-            break outer
-          }
-        }
-
-        // else continue to next, add to maze
-        swap(open, nextloc, open.length - 1)
-        curr = open.pop()
-        success = true
-        break
-      }
-
-      if (success) continue
-
-      if (nextpoint[0] < 0 || nextpoint[0] >= w || nextpoint[1] < 0 || nextpoint[1] >= h) {
-        break
-      }
-      if (tried.every(Boolean)) {
+        curr = nextid
         break
       }
     }
 
     // record path to maze
     for (let [k, v] of path) {
+      const openid = open.findIndex(x => x === k)
+      if (openid !== -1) {
+        swap(open, openid, open.length - 1)
+        open.pop()
+      }
+      visited.add(k)
+
       maze.push([k, v])
       maze.push([v, k])
     }
