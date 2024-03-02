@@ -122,6 +122,8 @@ class MyComponent extends Component<Props, State> {
     var interp = new Interpreter(code, initFunc)
     console.log(code)
     interp.run()
+
+    game.events.emit('solve')
   }
 
   public render() {

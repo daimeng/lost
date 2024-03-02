@@ -7,6 +7,13 @@ import { EMPTYROOM, randRoom } from "./room"
 
 const NULLF = function () { }
 
+enum Dir {
+  UP = 0,
+  RIGHT = 1,
+  DOWN = 2,
+  LEFT = 3,
+}
+
 export default class MainScene extends Scene {
   cursors: Phaser.Types.Input.Keyboard.CursorKeys
   keys: {
@@ -30,8 +37,13 @@ export default class MainScene extends Scene {
     gy: number,
   }
 
+  actions: Array<Generator> = []
+
+  marks: Array<Array<number>>
+
   constructor() {
     super('demo')
+
   }
 
   preload() {
@@ -47,6 +59,9 @@ export default class MainScene extends Scene {
     if (P) {
       this.pconf = JSON.parse(atob(P))
     }
+
+    // empty marks array
+    this.marks = new Array(MAZEH).fill(null).map((_, i) => new Array(MAZEW).fill(0))
 
     this.cursors = this.input.keyboard.createCursorKeys()
     this.keys = {
@@ -89,6 +104,7 @@ export default class MainScene extends Scene {
   }
 
   switchRoom(x: number, y: number) {
+    console.log(x, y)
     const borders = this.grid[y][x]
     const room = randRoom(borders, x, y)
     this.curr[0] = x
@@ -155,9 +171,64 @@ export default class MainScene extends Scene {
     this.p.spr.play({ key: 'idle', repeat: -1 })
 
     this.game.events.emit('main-loaded')
+
+    this.game.events.on('solve', this.run_solve)
+  }
+
+  *walk(dir: Dir) {
+    const x = this.curr[0]
+    const y = this.curr[1]
+
+    while (
+      (x === this.curr[0] && y === this.curr[1])
+      || this.p.x > 60 || this.p.x < 15
+      || this.p.y > 60 || this.p.y < 15
+    ) {
+      switch (dir) {
+        case Dir.UP:
+          this.cursors.up.isDown = true
+          break
+        case Dir.DOWN:
+          this.cursors.down.isDown = true
+          break
+        case Dir.LEFT:
+          this.cursors.left.isDown = true
+          break
+        case Dir.RIGHT:
+          this.cursors.right.isDown = true
+          break
+      }
+      yield
+    }
+    console.log(this.p.y)
+    this.cursors.up.isDown = false
+    this.cursors.down.isDown = false
+    this.cursors.left.isDown = false
+    this.cursors.right.isDown = false
+  }
+
+  public run_solve = () => {
+    const solve = this.solve()
+    this.actions.push(solve)
+  }
+
+  public *solve() {
+    yield* this.walk(Dir.UP)
+    yield* this.walk(Dir.LEFT)
+    // await this.walk(Dir.RIGHT)
+    // this.walk(Dir.DOWN)
+    // this.walk(Dir.LEFT)
   }
 
   update() {
+    if (this.actions.length) {
+      const action = this.actions[0]
+
+      if (action.next(this).done) {
+        this.actions.shift()
+      }
+    }
+
     if (this.cursors.left.isDown) {
       this.p.setVelocityX(-100)
     } else if (this.cursors.right.isDown) {
